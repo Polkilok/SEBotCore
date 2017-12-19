@@ -96,11 +96,84 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Ignore\TODOList.txt" />
+    <Compile Include="Core\Blocks.cs" />
+    <Compile Include="Conditons\CriticalMassCondition.cs" />
+    <Compile Include="Conditons\DockedCondition.cs" />
+    <Compile Include="Core\EventManager.cs" />
+    <Compile Include="Tasks\Travel\PotentialMethodMove\Forces\DangerousZoneForce.cs" />
+    <Compile Include="Tasks\Travel\PotentialMethodMove\Forces\SpeedResistForce.cs" />
+    <Compile Include="Tasks\Travel\PotentialMethodMove\PointProviders\DistanceFromBlockPointProvider.cs" />
+    <Compile Include="Tasks\Travel\PotentialMethodMove\Forces\GravityResistForce.cs" />
+    <Compile Include="Tasks\Travel\PotentialMethodMove\Forces\InertialForceCalculator.cs" />
+    <Compile Include="Tasks\Travel\PotentialMethodMove\Forces\MaxPowerForceCalculator.cs" />
+    <Compile Include="Tasks\Travel\PotentialMethodMove\PointProviders\NearestPlanetPointProvider.cs" />
+    <Compile Include="Tasks\Travel\PotentialMethodMove\Forces\OrbitingResistForce.cs" />
+    <Compile Include="Tasks\Travel\PotentialMethodMove\PointProviders\StaticPointProvider.cs" />
+    <Compile Include="Tasks\Travel\PotentialMethodMove\Forces\IForceCalculator.cs" />
+    <Compile Include="Tasks\Travel\PotentialMethodMove\PointProviders\IPointProvider.cs" />
+    <Compile Include="Core\MyCargo.cs" />
+    <Compile Include="Core\MyEnergySystem.cs" />
+    <Compile Include="Core\MyGyros.cs" />
+    <Compile Include="Core\MyTravelSystem.cs" />
+    <Compile Include="Core\MyTrusters.cs" />
+    <Compile Include="Core\OrientedBlocks.cs" />
+    <Compile Include="Tasks\Travel\PotentialMethodMove\PotentialMethodMove.cs" />
+    <Compile Include="Tasks\Travel\PotentialMethodMove\PotentialMethodMoveFactory.cs" />
+    <Compile Include="Core\ShipSystems.cs" />
+    <Compile Include="Core\SmartGyro.cs" />
+    <Compile Include="Core\SpaceNavigateSystem.cs" />
+    <Compile Include="Tasks\Travel\Factorys\SpeedLimitPotentialMethodFactory.cs" />
+    <Compile Include="Tasks\SaveDockPosition.cs" />
+    <Compile Include="Specification\Miner\DisableDrils.cs" />
+    <Compile Include="Specification\Miner\EnableDrils.cs" />
+    <Compile Include="Specification\Miner\MiningHereFactoryTask.cs" />
+    <Compile Include="Ignore\MoveOnDistanceInDirection.cs" />
+    <Compile Include="Tasks\Advanced\Dock.cs" />
+    <Compile Include="Core\DockSystem.cs" />
+    <Compile Include="Conditons\HorisontallyStabilityCondition.cs" />
+    <Compile Include="Conditons\OverloadCondition.cs" />
+    <Compile Include="Tasks\Advanced\ReverToBaseFactoryTask.cs" />
+    <Compile Include="Tasks\Travel\Factorys\FactoryHorisontStability.cs" />
+    <Compile Include="Ignore\FactoryMoveInDirection.cs" />
+    <Compile Include="Ignore\FactoryMoveToPoint.cs" />
+    <Compile Include="Tasks\Superposition\WithCondition\ICondition.cs" />
+    <Compile Include="Tasks\FactoryInterfaces\IFactoryPointBasedTask.cs" />
+    <Compile Include="Ignore\IFactoryPointDirectionBasedTask.cs" />
+    <Compile Include="Tasks\FactoryInterfaces\IFactoryPointProviderBasedTask.cs" />
+    <Compile Include="Tasks\FactoryInterfaces\IFactoryTask.cs" />
+    <Compile Include="Ignore\InertialThrusterEnableRule.cs" />
+    <Compile Include="Ignore\SpeedLimitThrusterEnableRule.cs" />
+    <Compile Include="Tasks\ApplyActionTask.cs" />
+    <Compile Include="Tasks\Superposition\WithCondition\ConditionalTask.cs" />
+    <Compile Include="Tasks\DelayCreateTask.cs" />
+    <Compile Include="Tasks\Superposition\WithCondition\Interrupt.cs" />
+    <Compile Include="LogSystem\Logger.cs" />
+    <Compile Include="LogSystem\LogTask.cs" />
+    <Compile Include="Tasks\Travel\StopTask.cs" />
+    <Compile Include="Tasks\Task.cs" />
+    <Compile Include="Tasks\Superposition\Simple\AsynkComplexTask.cs" />
+    <Compile Include="Tasks\Superposition\Simple\IComplexTask.cs" />
+    <Compile Include="Tasks\Superposition\WithCondition\InterruptedTask.cs" />
+    <Compile Include="Tasks\Superposition\Simple\OldComplexTask.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Ignore\Program.MoveInDirection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tasks\Superposition\Simple\TaskCyclce.cs" />
+    <Compile Include="Tasks\Superposition\Simple\TaskSequence.cs" />
+    <Compile Include="Ignore\ThrusterEnableRule.cs" />
+    <Compile Include="Tasks\Travel\TurnDirectionToPoint.cs" />
+    <Compile Include="Tasks\Advanced\UnDock.cs" />
+    <Compile Include="Tasks\Superposition\WithCondition\WaitTask.cs" />
+    <Compile Include="Conditons\WaitTimeCondition.cs" />
+    <Compile Include="Tasks\Travel\PotentialMethodMove\PointProviders\TunnelPointProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Rotation\" />
+    <Folder Include="Specification\Station\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
