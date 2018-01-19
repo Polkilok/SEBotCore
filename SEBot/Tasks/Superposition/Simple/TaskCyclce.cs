@@ -5,26 +5,27 @@ namespace SEBot
 	public sealed partial class Program
 	{
 		//представляет задачу цикличного выполнения задач
-		class TaskCyclce : Task
+		class TaskCyclce : ITask
 		{
 			//Очередь задач
-			private List<Task> TaskList;
-			private int CurrentTaskIndex;
+			private readonly List<ITask> _taskList;
+			private int _currentTaskIndex;
 			public TaskCyclce()
 			{
-				TaskList = new List<Task>();
-				CurrentTaskIndex = 0;
+				_taskList = new List<ITask>();
+				_currentTaskIndex = 0;
 			}
-			public void AddTask(Task task)
+			public void AddTask(ITask task)
 			{
-				TaskList.Add(task);
+				_taskList.Add(task);
 			}
-			public bool Execute()
+
+			public bool Execute(Environment env)
 			{
-				if (TaskList.Count == 0)
+				if (_taskList.Count == 0)
 					return true;
-				else if (TaskList[CurrentTaskIndex].Execute())
-					CurrentTaskIndex = (CurrentTaskIndex + 1) % TaskList.Count;
+				else if (_taskList[_currentTaskIndex].Execute(env))
+					_currentTaskIndex = (_currentTaskIndex + 1) % _taskList.Count;
 				return false;
 			}
 		}

@@ -5,9 +5,9 @@
 		/// <summary>
 		/// Предоставляет возможность создавать задачи, на основе меняющейся точки
 		/// </summary>
-		interface IFactoryPointProviderBasedTask
+		public interface IFactoryPointProviderBasedTask
 		{
-			Task GetTask(IPointProvider targetPoint);
+			ITask GetTask(IPointProvider targetPoint);
 		}
 	}
 

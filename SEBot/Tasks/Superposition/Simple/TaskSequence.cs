@@ -1,25 +1,27 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
+// ReSharper disable once CheckNamespace
 namespace SEBot
 {
 	public sealed partial class Program
 	{
 		//представляет задачу последовательного выполнения задач
 		//TODO объединить с ComplexTask
-		class TaskSequence : Task
+		class TaskSequence : ITask
 		{
 			//Очередь задач
-			private Queue<Task> TaskQueue;
+			private Queue<ITask> TaskQueue;
 
-			private Task CurrentTask;
+			private ITask CurrentTask;
 
 			public TaskSequence()
 			{
-				TaskQueue = new Queue<Task>();
+				TaskQueue = new Queue<ITask>();
 				CurrentTask = null;
 			}
 
-			public void AddTask(Task task)
+			public void AddTask(ITask task)
 			{
 				TaskQueue.Enqueue(task);
 			}
@@ -27,17 +29,17 @@ namespace SEBot
 			//TODO проверить
 			public void Reverse()
 			{
-				TaskQueue = new Queue<Task>(TaskQueue.Reverse());
+				TaskQueue = new Queue<ITask>(TaskQueue.Reverse());
 			}
 
-			public bool Execute()
+			public bool Execute(Environment env)
 			{
 				if (CurrentTask == null)
 					if (TaskQueue.Count > 0)
 						CurrentTask = TaskQueue.Dequeue();
 					else
 						return true;
-				if (CurrentTask.Execute())
+				if (CurrentTask.Execute(env))
 					if (TaskQueue.Count == 0)
 						CurrentTask = null;
 					else

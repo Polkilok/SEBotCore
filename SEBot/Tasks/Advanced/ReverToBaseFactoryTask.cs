@@ -6,7 +6,7 @@ namespace SEBot
 	{
 		class ReverToBaseFactoryTask : IFactoryTask
 		{
-			public Task GetTask()
+			public ITask GetTask()
 			{
 				Log.Log($"ReverToBaseFactoryTask.GetTask()", GLOBAL_ALGORITHMIC_ACTION);
 				Log.Log($"ReverToBaseFactoryTask.Time:{DateTime.Now.ToShortTimeString()}", GLOBAL_ALGORITHMIC_ACTION);

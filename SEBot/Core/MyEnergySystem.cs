@@ -3,7 +3,7 @@
 	public sealed partial class Program
 	{
 		//TODO
-		class MyEnergySystem
+	    public class MyEnergySystem
 		{
 		}
 	}

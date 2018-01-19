@@ -1,11 +1,12 @@
 ﻿using Sandbox.ModAPI.Ingame;
 
+// ReSharper disable once CheckNamespace
 namespace SEBot
 {
 	public sealed partial class Program
 	{
 		//класс, описывающтй задачу отстыковки - банально переключает состояние коннектора
-		class UnDock : Task
+		class UnDock : ITask
 		{
 			private readonly IMyShipConnector _connector;
 			//Создает задачу стыковки указанным коннектором, передавая позицию основного блока 
@@ -14,14 +15,15 @@ namespace SEBot
 			{
 				_connector = connector;
 			}
-			public bool Execute()
+
+			public bool Execute(Environment env)
 			{
 				Log.Log($"UnDock.Execute()", GLOBAL_ALGORITHMIC_ACTION);
 				Log.Log($"UnDock.Execute._connector.Status:{_connector.Status}", GLOBAL_ALGORITHMIC_ACTION);
 				if (_connector.Status == MyShipConnectorStatus.Connected)
 				{
 					Ship.DockSystem.SavePosition();
-					TerminalBlockExtentions.ApplyAction(_connector, "SwitchLock");
+					_connector.Disconnect();
 				}
 				else if (_connector.Status == MyShipConnectorStatus.Connectable)
 				{

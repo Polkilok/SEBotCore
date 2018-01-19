@@ -7,7 +7,7 @@ namespace SEBot
 {
 	public sealed partial class Program
 	{
-		class DockSystem
+		public class DockSystem
 		{
 			public readonly IMyShipConnector Connector;
 			private readonly Base6Directions.Direction connectorDir;
@@ -31,77 +31,81 @@ namespace SEBot
 			}
 
 			//Создает задачу стыковки
-			public Task GetDockTask()
+			public ITask GetDockTask()
 			{
 				return DockTaskGenerator.GetTask();
 			}
 
 			//предоставляет задачу отстыковки
-			public Task GetUnDockTask()
+			public ITask GetUnDockTask()
 			{
 				return UndockTaskGenerator.GetTask();
 			}
 
 			public void SavePosition()
 			{
-				Log.Log($"DockSystem.SavePosition()", UPDATE_SYSTEM);
-				OuterConnector = new DistanceFromBlockPointProvider(Connector,
-					new StaticPointProvider(
-						Ship.TravelSystem.ToGlobalCoordinate(
-							DistanceFromBlockPointProvider.LocalBlocCoordinates(Connector)
-							//+ Base6Directions.GetVector(Ship.MainController.Orientation.TransformDirectionInverse(Connector.Orientation.Forward)) * (float)ACCURACY_POSITIONING * 0.3f
-							)));
-				Log.Log($"DockSystem.SavePosition.OuterConnector.Now():{OuterConnector.Now()}", UPDATE_SYSTEM);
-				//добавляем несколько метров, чтобы корабль при стыковке не оставался висеть в паре милиметров от коннектора
-				StartDocking = new DistanceFromBlockPointProvider(Connector,
-					new StaticPointProvider(
-						Ship.TravelSystem.ToGlobalCoordinate(
-							DistanceFromBlockPointProvider.LocalBlocCoordinates(Connector)
-							- Base6Directions.GetVector(connectorDir) * (float)DOCK_START_DISTANCE
-							)));
-				//StartDocking = new StaticPointProvider(
-				//	Vector3D.Transform(Base6Directions.GetVector(connectorDir) * (float)DOCK_START_DISTANCE, Connector.WorldMatrix));
-				Log.Log($"DockSystem.SavePosition.StartDocking.Now():{StartDocking.Now()}", UPDATE_SYSTEM);
-				Log.Log($"DockSystem.SavePosition.End", UPDATE_SYSTEM);
+				//TODO FIX
+				//Log.Log($"DockSystem.SavePosition()", UPDATE_SYSTEM);
+				//OuterConnector = new DistanceFromBlockPointProvider(Connector,
+				//	new StaticPointProvider(
+				//		Ship.TravelSystem.ToGlobalCoordinate(
+				//			DistanceFromBlockPointProvider.LocalBlocCoordinates(Connector)
+				//			//+ Base6Directions.GetVector(Ship.MainController.Orientation.TransformDirectionInverse(Connector.Orientation.Forward)) * (float)ACCURACY_POSITIONING * 0.3f
+				//			)));
+				//Log.Log($"DockSystem.SavePosition.OuterConnector.Now():{OuterConnector.Now()}", UPDATE_SYSTEM);
+				////добавляем несколько метров, чтобы корабль при стыковке не оставался висеть в паре милиметров от коннектора
+				//StartDocking = new DistanceFromBlockPointProvider(Connector,
+				//	new StaticPointProvider(
+				//		Ship.TravelSystem.ToGlobalCoordinate(
+				//			DistanceFromBlockPointProvider.LocalBlocCoordinates(Connector)
+				//			- Base6Directions.GetVector(connectorDir) * (float)DOCK_START_DISTANCE
+				//			)));
+				////StartDocking = new StaticPointProvider(
+				////	Vector3D.Transform(Base6Directions.GetVector(connectorDir) * (float)DOCK_START_DISTANCE, Connector.WorldMatrix));
+				//Log.Log($"DockSystem.SavePosition.StartDocking.Now():{StartDocking.Now()}", UPDATE_SYSTEM);
+				//Log.Log($"DockSystem.SavePosition.End", UPDATE_SYSTEM);
 			}
 
 			public void SavePosition(Vector3D startDockGC, Vector3D OuterDockGC)
 			{
-				Log.Log($"DockSystem.SavePosition()", UPDATE_SYSTEM);
-
-				OuterConnector = new DistanceFromBlockPointProvider(Connector,
-					new StaticPointProvider(
-						OuterDockGC));
-				Log.Log($"DockSystem.SavePosition.OuterConnector.Now():{OuterConnector.Now()}", UPDATE_SYSTEM);
-				//добавляем несколько метров, чтобы корабль при стыковке не оставался висеть в паре милиметров от коннектора
-				StartDocking = new StaticPointProvider(
-					Vector3D.Transform(Base6Directions.GetVector(connectorDir) * (float)DOCK_START_DISTANCE, Connector.WorldMatrix));
-				Log.Log($"DockSystem.SavePosition.StartDocking.Now():{StartDocking.Now()}", UPDATE_SYSTEM);
-				Log.Log($"DockSystem.SavePosition.End", UPDATE_SYSTEM);
+				//TODO FIX
+				//Log.Log($"DockSystem.SavePosition()", UPDATE_SYSTEM);
+				//OuterConnector = new DistanceFromBlockPointProvider(Connector,
+				//	new StaticPointProvider(
+				//		OuterDockGC));
+				//Log.Log($"DockSystem.SavePosition.OuterConnector.Now():{OuterConnector.Now()}", UPDATE_SYSTEM);
+				////добавляем несколько метров, чтобы корабль при стыковке не оставался висеть в паре милиметров от коннектора
+				//StartDocking = new StaticPointProvider(
+				//	Vector3D.Transform(Base6Directions.GetVector(connectorDir) * (float)DOCK_START_DISTANCE, Connector.WorldMatrix));
+				//Log.Log($"DockSystem.SavePosition.StartDocking.Now():{StartDocking.Now()}", UPDATE_SYSTEM);
+				//Log.Log($"DockSystem.SavePosition.End", UPDATE_SYSTEM);
 			}
 
 			public class DockFactory : IFactoryTask
 			{
 				private readonly DockSystem _parent;
+
 				public DockFactory(DockSystem dockSystem)
 				{
 					if (dockSystem == null) throw new Exception($"argument {nameof(dockSystem)} is null exception.");
 					_parent = dockSystem;
 				}
-				public Task GetTask()
+
+				public ITask GetTask()
 				{
+					//TODO FIX
 					if (_parent.OuterConnector == null) throw new Exception($"Can't dock. {nameof(_parent.OuterConnector)} is null");
 					if (_parent.StartDocking == null) throw new Exception($"Can't dock. {nameof(_parent.StartDocking)} is null");
 					var answer = new TaskSequence();
 					var dockTask = new OldComplexTask(OldComplexTask.EndCondition.Repeat);
 					//точка, на которую надо навестись
-					Vector3D orientationPoint = Ship.TravelSystem.ToGlobalCoordinate(2d * _parent.OuterConnector.Now() - _parent.StartDocking.Now());
+					Vector3D orientationPoint = Ship.TravelSystem.ToGlobalCoordinate(2d * _parent.OuterConnector.Now(new Environment(Ship)) - _parent.StartDocking.Now(new Environment(Ship)));
 					//отключим дрелли
 					answer.AddTask(new DisableDrils());//TODO наверное, надо отключать все инструменты?
 													   //Прилететь к начальной точке, это не надо повторять
 					answer.AddTask(_parent._travelFactory.GetTask(_parent.StartDocking));
 					//соориентировать коннектор по направлению
-					dockTask.AddTask(new TurnDirectionToPoint(_parent.connectorDir, orientationPoint));
+					dockTask.AddTask(new TurnDirectionToPoint(_parent.connectorDir, new StaticPointProvider(orientationPoint)));
 
 					//подлететь к доку без вращений
 					//var potMove = _parent._travelFactory.GetTask(_parent.OuterConnector) as PotentialMethodMove;
@@ -123,15 +127,18 @@ namespace SEBot
 					return answer;
 				}
 			}
+
 			public class UndockFactory : IFactoryTask
 			{
 				private readonly DockSystem _parent;
+
 				public UndockFactory(DockSystem dockSystem)
 				{
 					if (dockSystem == null) throw new Exception($"argument {nameof(dockSystem)} is null exception.");
 					_parent = dockSystem;
 				}
-				public Task GetTask()
+
+				public ITask GetTask()
 				{
 					OldComplexTask answer = new OldComplexTask(OldComplexTask.EndCondition.Repeat);
 					answer.AddTask(new UnDock(_parent.Connector));
@@ -149,5 +156,4 @@ namespace SEBot
 			}
 		}
 	}
-
 }

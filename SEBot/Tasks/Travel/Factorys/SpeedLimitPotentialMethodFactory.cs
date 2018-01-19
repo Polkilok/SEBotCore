@@ -37,7 +37,7 @@ namespace SEBot
 				_safetyFlyHeight = safetyFlyHeight;
 				_maxSpeed = maxSpeed;
 			}
-			public Task GetTask(Vector3D targetPoint, bool rotatate = false)
+			public ITask GetTask(Vector3D targetPoint, bool rotatate = false)
 			{
 				Log.Log($"SimplePotentialMethodFactory.GetTask({Vector3.Round(targetPoint, 0)}, {rotatate}", TRAVEL_SYSTEM_DEBUG_LVL);
 				if (rotatate == false)
@@ -53,7 +53,7 @@ namespace SEBot
 					Log.Log($"SimplePotentialMethodFactory.GetTask.End", TRAVEL_SYSTEM_DEBUG_LVL);
 					return AddHS(moveTask);
 				}
-				Task rotateTask = new TurnDirectionToPoint(Base6Directions.Direction.Forward, targetPoint, _noRotationZone);
+				ITask rotateTask = new TurnDirectionToPoint(Base6Directions.Direction.Forward, targetPoint, _noRotationZone);
 				OldComplexTask outerTask = new OldComplexTask(OldComplexTask.EndCondition.Last);
 				outerTask.AddTask(rotateTask);
 				outerTask.AddTask(GetTask(targetPoint, false));

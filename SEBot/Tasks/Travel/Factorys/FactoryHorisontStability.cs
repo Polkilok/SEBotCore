@@ -7,7 +7,7 @@ namespace SEBot
 		//Фабрика, которая создает задачи стабилизации относительно горизонта
 		class FactoryHorisontStability : IFactoryTask
 		{
-			public Task GetTask()
+			public ITask GetTask()
 			{
 				Log.Log($"FactoryHorisontStability.GetTask()", GRAVITY_EXTENDS_TASKS);
 				Vector3D gravity = Ship.MainController.GetTotalGravity();

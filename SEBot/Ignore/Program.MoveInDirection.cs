@@ -10,20 +10,21 @@ namespace SEBot
 		//может выполняться во время вращений
 		//перемещения в перпендикулярных направлениях не учитываются
 		//при "промахе" включается задний ход
-		//дефолтный вариант 
+		//дефолтный вариант
 		//после окончания переопределение направлений вперед/назад сбрасывается
-		class MoveInDirection : Program.Task
+		private class MoveInDirection : Program.ITask
 		{
-
 			private readonly Base6Directions.Direction Direction;
 			private readonly Vector3D DestinationPoint;
 			private readonly Program.ThrusterEnableRule EnableRule;
+
 			public MoveInDirection(Program.ThrusterEnableRule enableRule, Base6Directions.Direction direction, Vector3D point)
 			{
 				DestinationPoint = point;
 				Direction = direction;
 				EnableRule = enableRule;
 			}
+
 			public bool Execute()
 			{
 				//Log.Log("Task \'MoveInDirection\' :" + Direction.ToString());
@@ -33,19 +34,18 @@ namespace SEBot
 				{
 					//точка достигнута
 					//сбросим тягу
-					Program.Ship.MovementSystem.OverrideDirection(Direction, false);
-					Program.Ship.MovementSystem.OverrideDirection(Base6Directions.GetOppositeDirection(Direction), false);
+					Ship.MovementSystem.OverrideDirection(Direction, false);
+					Ship.MovementSystem.OverrideDirection(Base6Directions.GetOppositeDirection(Direction), false);
 					return true;
 				}
 				else
 					EnableThrust(leftDistance);
 				return false;
-
 			}
 
 			private double CalculateLeftDistance()
 			{
-				Vector3D DestinationPointLC = Program.Ship.TravelSystem.ToLocalCoordinate(DestinationPoint);
+				Vector3D DestinationPointLC = Ship.TravelSystem.ToLocalCoordinate(DestinationPoint);
 				Vector3D mask = Base6Directions.GetVector(Direction);
 				//Log.Log("Left Distance trunc vec " + FloorCoordinate(trunc));
 				return (DestinationPointLC * mask).Sum;
@@ -56,19 +56,23 @@ namespace SEBot
 				Base6Directions.Direction TargetDirection = leftDistance > 0 ? Direction :
 					Base6Directions.GetOppositeDirection(Direction);
 				leftDistance = Math.Abs(leftDistance);
-				Program.Log.Log("MoveInDirection\tMove in real direction " + TargetDirection.ToString());
+				Log.Log("MoveInDirection\tMove in real direction " + TargetDirection.ToString());
 				if (EnableRule.EnableCondition(leftDistance, TargetDirection))
-					Program.Ship.MovementSystem.MoveInDirection(TargetDirection,
+					Ship.MovementSystem.MoveInDirection(TargetDirection,
 						EnableRule.ThrustPower(leftDistance, TargetDirection));
 				else
 				{
 					//считаем, что включена система гашения инерции
 					//TODO включать принудительно?
-					Program.Ship.MovementSystem.MoveInDirection(TargetDirection, 0);
+					Ship.MovementSystem.MoveInDirection(TargetDirection, 0);
 					//TODO строчка ниже не нужна?
 				}
 			}
+
+			public bool Execute(Environment env)
+			{
+				return Execute();
+			}
 		}
 	}
-
 }

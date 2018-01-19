@@ -10,7 +10,7 @@ namespace SEBot
 		/// Предоставляет смещение, такое, как если бы основным блоком являлся другой блок
 		/// Но при этом не делает вращения (это может привести к неприятным последствиям)
 		/// </summary>
-		class DistanceFromBlockPointProvider : IPointProvider
+		private class DistanceFromBlockPointProvider : IPointProvider
 		{
 			private readonly IMyCubeBlock _block;
 			private readonly IPointProvider _pointProvider;
@@ -23,21 +23,20 @@ namespace SEBot
 				_block = block;
 			}
 
-			public Vector3D Now()
+			public static Vector3D LocalBlocCoordinates(Environment env, IMyCubeBlock block)
 			{
-				return _pointProvider.Now() - LocalBlocCoordinates(_block);
+				return env.MathCache.ToLocal(block.CubeGrid.GridIntegerToWorld(block.Position));
 			}
 
-			public Vector3D Prognosed(double seconds)
+			public Vector3D Now(Environment env)
 			{
-				return _pointProvider.Prognosed(seconds) - LocalBlocCoordinates(_block);
+				return _pointProvider.Now(env) - LocalBlocCoordinates(env, _block);
 			}
 
-			public static Vector3D LocalBlocCoordinates(IMyCubeBlock block)
+			public Vector3D Prognosed(Environment env, double seconds)
 			{
-				return Ship.TravelSystem.ToLocalCoordinate(block.CubeGrid.GridIntegerToWorld(block.Position));
+				return Now(env) - env.VectorShipSpeed * seconds;
 			}
 		}
 	}
-
 }

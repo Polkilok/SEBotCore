@@ -6,10 +6,10 @@ namespace SEBot
 	public sealed partial class Program
 	{
 		//представляет задачу, требующую одновременного выполнения нескольких других
-		class OldComplexTask : Task
+		class OldComplexTask : ITask
 		{
-			private readonly List<Task> Tasks;
-			private readonly EndCondition Condition;
+			private readonly List<ITask> _tasks;
+			private readonly EndCondition _condition;
 			public enum EndCondition { All, Any, Last, Repeat };
 			//Создает пустую задачу одновременного выполнения, используя заданное условие выполнения
 			//All - все задачи должны вернуть true
@@ -20,41 +20,42 @@ namespace SEBot
 			//TODO разнести по разным классам
 			public OldComplexTask(EndCondition endCondition = EndCondition.All)
 			{
-				Tasks = new List<Task>();
-				Condition = endCondition;
+				_tasks = new List<ITask>();
+				_condition = endCondition;
 			}
-			public bool Execute()
+
+			public void AddTask(ITask task)
 			{
-				//Log.Log("Task \'ComplexTask\'");
-				if (Tasks.Count == 0)
+				_tasks.Add(task);
+			}
+
+			public bool Execute(Environment env)
+			{
+				if (_tasks.Count == 0)
 				{
 					Log.Warning("ComplexTask: empty");
 					return true;//чтобы пропускать пустые листы
 				}
 
-				List<bool> flags = new List<bool>(Tasks.Count);//иначе нас ждет оптимизация
-				if (Condition == EndCondition.Repeat)
+				List<bool> flags = new List<bool>(_tasks.Count);//иначе нас ждет оптимизация
+				if (_condition == EndCondition.Repeat)
 				{
 					int i = 0;
 					bool flag = true;
-					while (i < Tasks.Count && flag)
-						flag = Tasks[i++].Execute();
+					while (i < _tasks.Count && flag)
+						flag = _tasks[i++].Execute(env);
 					return flag;
 				}
-				for (int i = 0; i < Tasks.Count; ++i)
-					flags.Add(Tasks[i].Execute());
-				if (Condition == EndCondition.All)
+				for (int i = 0; i < _tasks.Count; ++i)
+					flags.Add(_tasks[i].Execute(env));
+				if (_condition == EndCondition.All)
 					return !flags.Contains(false);
-				else if (Condition == EndCondition.Any)
+				else if (_condition == EndCondition.Any)
 					return flags.Contains(true);
-				else if (Condition == EndCondition.Last)
-					return flags[Tasks.Count - 1];
+				else if (_condition == EndCondition.Last)
+					return flags[_tasks.Count - 1];
 				else
 					throw new Exception("Bad value in \'ComplexTask\' for ICondition or unrealized functional");
-			}
-			public void AddTask(Task task)
-			{
-				Tasks.Add(task);
 			}
 		}
 	}

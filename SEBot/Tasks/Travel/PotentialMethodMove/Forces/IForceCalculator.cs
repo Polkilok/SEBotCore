@@ -8,10 +8,9 @@ namespace SEBot
 		/// Интерфейс, который расчитывает некоторую силу, генерируемую заданной точкой
 		/// Используется для расчетов в методе потенциалов
 		/// </summary>
-		interface IForceCalculator
+		public interface IForceCalculator
 		{
-			Vector3D Calculate();
+			Vector3D Calculate(Environment env);
 		}
 	}
-
 }

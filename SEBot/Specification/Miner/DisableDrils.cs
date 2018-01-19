@@ -2,11 +2,11 @@
 {
 	public sealed partial class Program
 	{
-		class DisableDrils : Task
+		class DisableDrils : ITask
 		{
-			public bool Execute()
+			public bool Execute(Environment env)
 			{
-				Ship.Drils.Disable();
+				env.Ship.Drils.Disable();
 				return true;
 			}
 		}

@@ -1,15 +1,18 @@
 ﻿using System;
 using VRageMath;
 
+// ReSharper disable once CheckNamespace
 namespace SEBot
 {
 	public sealed partial class Program
 	{
 		//TODO Test
-		class TunnelPointProvider : IPointProvider
+		//TODO make segmentPointProvider
+		private class TunnelPointProvider : IPointProvider
 		{
 			private readonly IPointProvider _end;
 			private readonly IPointProvider _begin;
+
 			public TunnelPointProvider(IPointProvider begin, IPointProvider end)
 			{
 				if (begin == null) throw new Exception($"Argument null exception: {nameof(begin)}");
@@ -18,10 +21,10 @@ namespace SEBot
 				_end = end;
 			}
 
-			public Vector3D Now()
+			private Vector3D FindNearestPoint(Environment env)
 			{
-				var a = _begin.Now();
-				var b = _end.Now();
+				var a = _begin.Now(env);
+				var b = _end.Now(env);
 				//Point2d a, b;      //наша прямая
 				var x = new Vector3D(0);        //точка которая проецируется
 				var v = b - a; //сдвинем точку "a" в начало координат
@@ -32,12 +35,15 @@ namespace SEBot
 				return xp;
 			}
 
-			//TODO реализовать
-			public Vector3D Prognosed(double seconds)
+			public Vector3D Now(Environment env)
 			{
-				return Now();
+				return FindNearestPoint(env);
+			}
+
+			public Vector3D Prognosed(Environment env, double seconds)
+			{
+				return Now(env) - env.ShipSpeed * seconds;// '-' because LocalCoordinates
 			}
 		}
 	}
-
 }

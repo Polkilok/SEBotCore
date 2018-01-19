@@ -1,5 +1,6 @@
 ﻿using System;
 using Sandbox.ModAPI.Ingame;
+using Sandbox.ModAPI.Interfaces;
 using VRage.Game.ModAPI.Ingame;
 using VRageMath;
 
@@ -8,7 +9,7 @@ namespace SEBot
 	public sealed partial class Program
 	{
 		//FIXID внешне-локальные внутренне-корабельные координаты
-		class SmartGyro
+	    public class SmartGyro
 		{
 			private IMyGyro m_Gyro;
 			private string MapRotateByZ = "Roll";
@@ -51,7 +52,7 @@ namespace SEBot
 				//Log.Log("Rotate input " + FloorCoordinate(settings));
 				//Log.Log("Rotate apply " + FloorCoordinate(vec));
 				if (!m_Gyro.GyroOverride)
-					TerminalBlockExtentions.ApplyAction(m_Gyro, "Override");
+					m_Gyro.ApplyAction("Override");
 
 				//TODO вращать только не 0-ые значения
 				m_Gyro.SetValue(MapRotateByZ, (float)vec.Z);

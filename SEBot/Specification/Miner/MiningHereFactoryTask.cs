@@ -25,7 +25,7 @@ namespace SEBot
 				SpeedLimitFactory = speedLimitFactory;
 			}
 
-			public Task GetTask()
+			public ITask GetTask()
 			{
 				Log.Log($"MiningHereFactoryTask.GetTask()", MINING_TASK_LVL);
 				//0 - нужно включить буры
@@ -53,7 +53,7 @@ namespace SEBot
 				return AddHS(AddUnloadInterrupt(answer));
 			}
 
-			private Task AddUnloadInterrupt(Task mainTask)
+			private ITask AddUnloadInterrupt(ITask mainTask)
 			{
 				var answer = new InterruptedTask(mainTask);
 				answer.AddInterrupt(new Interrupt(new CriticalMassCondition(

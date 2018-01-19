@@ -4,25 +4,24 @@ namespace SEBot
 {
 	public sealed partial class Program
 	{
-		class StaticPointProvider : IPointProvider
+		private class StaticPointProvider : IPointProvider
 		{
-			private Vector3D _point;
+			private readonly Vector3D _point;
+
 			public StaticPointProvider(Vector3D pointInGlobalCoordinates)
 			{
 				_point = pointInGlobalCoordinates;
 			}
 
-			public Vector3D Now()
+			public Vector3D Now(Environment env)
 			{
-				return Ship.TravelSystem.ToLocalCoordinate(_point);
+				return env.MathCache.ToLocal(_point);
 			}
 
-			//TODO test
-			public Vector3D Prognosed(double seconds)
+			public Vector3D Prognosed(Environment env, double seconds)
 			{
-				return Ship.TravelSystem.ToLocalCoordinate(_point) - Ship.TravelSystem.Speed * seconds;
+				return Now(env) - env.VectorShipSpeed * seconds;// '-' because LocalCoordinates
 			}
 		}
 	}
-
 }

@@ -5,10 +5,10 @@ namespace SEBot
 	public sealed partial class Program
 	{
 		//TODO Remove?
-		class MoveOnDistanceInDirection : Task
+		class MoveOnDistanceInDirection : ITask
 		{
 			FactoryMoveToPoint MoveFactory;
-			Task MoveTask;
+			ITask MoveTask;
 			Base6Directions.Direction Direction;
 			double Distance;
 			public MoveOnDistanceInDirection(double distance, Base6Directions.Direction direction, FactoryMoveToPoint moveFactory)

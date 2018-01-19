@@ -2,88 +2,35 @@
 using System.Collections.Generic;
 using VRageMath;
 
+// ReSharper disable once CheckNamespace
 namespace SEBot
 {
 	public sealed partial class Program
 	{
-		class PotentialMethodMove : Task
+		private class PotentialMethodMove : ITask
 		{
-			internal class ForceK
-			{
-				public readonly IForceCalculator Force;
-				public readonly double K;
-				public ForceK(IForceCalculator force, double Coef)
-				{
-					Force = force;
-					K = Coef;
-				}
-			}
-			private readonly List<ForceK> forces;
-			private readonly IPointProvider _point;
-			private readonly double _accuracyPositioning_2;
-			private readonly double _accuracySpeed_2;
 			private readonly double _accuracyForce;
-			private double _maxForce;
 
-			//TODO использовать (ITargetPointProvider targetPoint, ...)
+			private readonly double _accuracyPositioning;
+
+			private readonly double _accuracySpeed;
+
+			private readonly List<ForceK> _forces;
+
+			private readonly IPointProvider _targetPoint;
+
 			public PotentialMethodMove(IPointProvider targetPoint, double accuracyPositioning, double accuracySpeed, double accuracyForce)
 			{
 				if (accuracyPositioning < 0.0) throw new Exception($"Out of range, need positive. {nameof(accuracyPositioning)}:{accuracyPositioning}");
 				if (accuracySpeed < 0.0) throw new Exception($"Out of range, need positive. {nameof(accuracySpeed)}:{accuracySpeed}");
 				if (accuracyForce < 0.0) throw new Exception($"Out of range, need positive. {nameof(accuracyForce)}:{accuracyForce}");
-				_accuracySpeed_2 = accuracySpeed * accuracySpeed;
-				_accuracyPositioning_2 = accuracyPositioning * accuracyPositioning;
-				_point = targetPoint;
+				_accuracySpeed = accuracySpeed;
+				_accuracyPositioning = accuracyPositioning;
+				_targetPoint = targetPoint;
 				_accuracyForce = accuracyForce;
-				forces = new List<ForceK>();
-				_maxForce = 0.0;
-				foreach (var dir in Base6Directions.EnumDirections)
-					_maxForce = Math.Max(Ship.MovementSystem.GetMaxPowerInDirection(dir), _maxForce);
+				_forces = new List<ForceK>();
 			}
 
-			public bool Execute()
-			{
-				Log.Log($"PotentialMethodMove.Execute.Execute()", POTENTIAL_METHOD_RESULTS_DEBUG_LVL);
-				Log.Log($"PotentialMethodMove.Execute.forces.Count:{forces.Count}", POTENTIAL_METHOD_RESULTS_DEBUG_LVL);
-				double speed = Ship.TravelSystem.Speed.LengthSquared();
-				double leftDistance = _point.Now().LengthSquared();
-				if (leftDistance < _accuracyPositioning_2 && speed < _accuracySpeed_2)
-				{
-					Ship.MovementSystem.Stop();
-					Log.Log($"PotentialMethodMove.Execute.End", POTENTIAL_METHOD_RESULTS_DEBUG_LVL);
-					return true;
-				}
-				Vector3D resultForce = new Vector3D(0.0);
-				foreach (var force in forces)
-				{
-					Vector3 f = force.Force.Calculate() * force.K;
-					Log.Log($"PotentialMethodMove.Execute.f({force.Force.GetType().Name}):{Vector3.Round(f, 2)}", POTENTIAL_METHOD_RESULTS_DEBUG_LVL);
-					resultForce = Vector3D.Add(f, resultForce);
-				}
-				Log.Log($"PotentialMethodMove.Execute.resultForce:{Vector3.Round(resultForce, 2)}", POTENTIAL_METHOD_RESULTS_DEBUG_LVL);
-				foreach (var dir in Base6Directions.EnumDirections)
-				{
-					double proj = (resultForce * Base6Directions.GetVector(dir)).Sum;
-					var oppositiveDir = Base6Directions.GetOppositeDirection(dir);
-					if (proj > _accuracyForce)
-					{
-						var maxPower = Ship.MovementSystem.GetMaxPowerInDirection(oppositiveDir);
-						Ship.MovementSystem.OverrideDirection(
-							oppositiveDir,
-							(float)Math.Min(proj / maxPower, 1.0));
-					}
-					else
-						Ship.MovementSystem.OverrideDirection(oppositiveDir, 0f);
-				}
-				Log.Log($"PotentialMethodMove.Execute.End", POTENTIAL_METHOD_RESULTS_DEBUG_LVL);
-				return false;
-			}
-
-			public void AddForce(IForceCalculator force, double Coef)
-			{
-				if (force == null) throw new Exception($"{nameof(force)} is null");
-				forces.Add(new ForceK(force, Coef));
-			}
 			/// <summary>
 			/// Распределяет силу по двигателям с максимальной эффективностью.
 			/// Как минимум 1 двигатель будет задействован на 100%, остальные - меньше 100%
@@ -103,7 +50,69 @@ namespace SEBot
 				//всё, теперь мы уложимся в допустимый диапазон
 				return k * force;
 			}
+
+			public void AddForce(IForceCalculator force, double coef)
+			{
+				if (force == null) throw new Exception($"{nameof(force)} is null");
+				_forces.Add(new ForceK(force, coef));
+			}
+
+			public bool Execute(Environment env)
+			{
+				Log.Log($"PotentialMethodMove.Execute.Execute({env})", nameof(PotentialMethodMove));
+				Log.Log($"PotentialMethodMove.Execute.forces.Count:{_forces.Count}", nameof(PotentialMethodMove));
+				double speed = env.ShipSpeed;
+				double leftDistance = env.MathCache.Length(_targetPoint.Now(env));
+				if (leftDistance < _accuracyPositioning && speed < _accuracySpeed)
+				{
+					env.Ship.MovementSystem.Stop();
+					Log.Log($"PotentialMethodMove.Execute.End", nameof(PotentialMethodMove));
+					return true;
+				}
+				Vector3D resultForce = new Vector3D(0.0);
+
+				foreach (var force in _forces)
+				{
+					Vector3 f = force.Force.Calculate(env) * force.K;
+					Log.Log($"PotentialMethodMove.Execute.f({force.Force.GetType().Name}):{Vector3.Round(f, 2)}", nameof(PotentialMethodMove));
+					resultForce = Vector3D.Add(f, resultForce);
+				}
+				ApplyForce(env, resultForce);
+				Log.Log($"PotentialMethodMove.Execute.End", nameof(PotentialMethodMove));
+				return false;
+			}
+
+			private void ApplyForce(Environment environment, Vector3 resultForce)
+			{
+				Log.Log($"PotentialMethodMove.ApplyForce({environment},{Vector3.Round(resultForce, 2)}", nameof(PotentialMethodMove));
+				foreach (var dir in Base6Directions.EnumDirections)
+				{
+					double proj = Vector3D.Dot(resultForce, Base6Directions.GetVector(dir));
+					var oppositiveDir = Base6Directions.GetOppositeDirection(dir);
+					if (proj > _accuracyForce)
+					{
+						var maxPower = environment.Ship.MovementSystem.GetMaxPowerInDirection(oppositiveDir);
+						environment.Ship.MovementSystem.OverrideDirection(
+							oppositiveDir,
+							(float)Math.Min(proj / maxPower, 1.0));
+					}
+					else
+						environment.Ship.MovementSystem.OverrideDirection(oppositiveDir, 0f);
+				}
+				Log.Log($"PotentialMethodMove.ApplyForce.End", nameof(PotentialMethodMove));
+			}
+
+			private class ForceK
+			{
+				public readonly IForceCalculator Force;
+				public readonly double K;
+
+				public ForceK(IForceCalculator force, double coef)
+				{
+					Force = force;
+					K = coef;
+				}
+			}
 		}
 	}
-
 }

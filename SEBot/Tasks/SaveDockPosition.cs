@@ -2,13 +2,13 @@
 {
 	public sealed partial class Program
 	{
-		class SaveDockPosition : Task
+		class SaveDockPosition : ITask
 		{
-			public bool Execute()
+			public bool Execute(Environment env)
 			{
 				Log.Log("Dock Matrix saved");
 				//TODO проверять, пристыкован ли кораблик
-				Ship.DockSystem.SavePosition();
+				env.Ship.DockSystem.SavePosition();
 				return true;
 			}
 		}

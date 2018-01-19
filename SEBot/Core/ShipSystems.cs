@@ -9,7 +9,7 @@ namespace SEBot
 	{
 		//все составляющие корабля должны работать в координатной сетке корабля, а не како-го то блока
 		//при этом снаружи эта сетка должна выглядеть координатной сеткой, привязанной к основному блоку
-		class ShipSystems
+	    public class ShipSystems
 		{
 			public readonly MyGyros OrientationSystem;
 			public readonly MyTrusters MovementSystem;
@@ -37,9 +37,9 @@ namespace SEBot
 				CargoSystem = new MyCargo();
 				EnergySystem = new MyEnergySystem();
 				Drils = new MyShipDrils(gridTerminalSystem);
-				ThrusterEnableRule rule = new InertialThrusterEnableRule(ACCURACY_POSITIONING, ACCURACY_SPEED);
-				IFactoryPointDirectionBasedTask FactorySpeedLimit =
-					new FactoryMoveInDirection(rule);
+				//ThrusterEnableRule rule = new InertialThrusterEnableRule(ACCURACY_POSITIONING, ACCURACY_SPEED);
+				//IFactoryPointDirectionBasedTask FactorySpeedLimit =
+				//	new FactoryMoveInDirection(rule);
 				//FactoryMoveToPoint travelFactory = new FactoryMoveToPoint(FactorySpeedLimit);
 				var travelFactory = new PotentialMethodMoveFactory(DEATH_ZONE_FOR_ROTATION, SAFETY_FLY_HEIGHT);
 				TravelSystem = new MyTravelSystem(MainController, travelFactory);

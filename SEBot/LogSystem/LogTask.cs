@@ -2,19 +2,22 @@
 {
 	public sealed partial class Program
 	{
-		class LogTask : Task
+		private class LogTask : ITask
 		{
-			string msg;
-			public LogTask(string Message)
+			private readonly string _msg;
+			private readonly string _source;
+
+			public LogTask(string message, string source = Logger.INFO_STR)
 			{
-				msg = Message;
+				_msg = message;
+				_source = source;
 			}
-			public bool Execute()
+
+			public bool Execute(Environment env)
 			{
-				Log.Log("Task \'LogTask\'\n\t" + msg);
+				Log.Log(_msg, _source);
 				return true;
 			}
 		}
 	}
-
 }

@@ -1,17 +1,19 @@
-﻿namespace SEBot
+﻿// ReSharper disable once CheckNamespace
+namespace SEBot
 {
 	public sealed partial class Program
 	{
-		class WaitTask : Task
+		class WaitTask : ITask
 		{
-			ICondition condition;
+			private readonly ICondition _condition;
 			public WaitTask(ICondition cond)
 			{
-				condition = cond;
+				_condition = cond;
 			}
-			public bool Execute()
+
+			public bool Execute(Environment env)
 			{
-				return condition.Check();
+				return _condition.Check();
 			}
 		}
 	}

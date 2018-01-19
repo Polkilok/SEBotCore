@@ -2,17 +2,12 @@
 {
 	public sealed partial class Program
 	{
-		/******************************************************************************/
-		/******************************************************************************/
-		/******************************************************************************/
-		//Специфичные задачи и фабрики
-
 		//Да, задача просто включает буры
-		class EnableDrils : Task
+		class EnableDrils : ITask
 		{
-			public bool Execute()
+			public bool Execute(Environment env)
 			{
-				Ship.Drils.Enable();
+				env.Ship.Drils.Enable();
 				return true;
 			}
 		}

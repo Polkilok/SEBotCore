@@ -100,12 +100,17 @@
     <Compile Include="Core\Blocks.cs" />
     <Compile Include="Conditons\CriticalMassCondition.cs" />
     <Compile Include="Conditons\DockedCondition.cs" />
+    <Compile Include="Core\Cache\Cache.cs" />
     <Compile Include="Core\EventManager.cs" />
+    <Compile Include="Core\Cache\Environment.cs" />
+    <Compile Include="Core\Cache\VectorOperationCaches.cs" />
+    <Compile Include="Tasks\Travel\PotentialMethodMove\Forces\SimpleOrbitingResistForce.cs" />
+    <Compile Include="Tasks\Travel\PotentialMethodMove\Forces\ImpulseInertialForceCalculator.cs" />
     <Compile Include="Tasks\Travel\PotentialMethodMove\Forces\DangerousZoneForce.cs" />
+    <Compile Include="Tasks\Travel\PotentialMethodMove\Forces\InertialForceCalculator.cs" />
     <Compile Include="Tasks\Travel\PotentialMethodMove\Forces\SpeedResistForce.cs" />
     <Compile Include="Tasks\Travel\PotentialMethodMove\PointProviders\DistanceFromBlockPointProvider.cs" />
     <Compile Include="Tasks\Travel\PotentialMethodMove\Forces\GravityResistForce.cs" />
-    <Compile Include="Tasks\Travel\PotentialMethodMove\Forces\InertialForceCalculator.cs" />
     <Compile Include="Tasks\Travel\PotentialMethodMove\Forces\MaxPowerForceCalculator.cs" />
     <Compile Include="Tasks\Travel\PotentialMethodMove\PointProviders\NearestPlanetPointProvider.cs" />
     <Compile Include="Tasks\Travel\PotentialMethodMove\Forces\OrbitingResistForce.cs" />
@@ -153,7 +158,7 @@
     <Compile Include="Tasks\Travel\StopTask.cs" />
     <Compile Include="Tasks\Task.cs" />
     <Compile Include="Tasks\Superposition\Simple\AsynkComplexTask.cs" />
-    <Compile Include="Tasks\Superposition\Simple\IComplexTask.cs" />
+    <Compile Include="Tasks\Superposition\Simple\ComplexTask.cs" />
     <Compile Include="Tasks\Superposition\WithCondition\InterruptedTask.cs" />
     <Compile Include="Tasks\Superposition\Simple\OldComplexTask.cs" />
     <Compile Include="Program.cs" />

@@ -5,12 +5,12 @@
 		/// <summary>
 		/// Задача, которая дает указание выполнить остановку
 		/// </summary>
-		class StopTask : Task
+		class StopTask : ITask
 		{
-			public bool Execute()
+			public bool Execute(Environment env)
 			{
-				Ship.MovementSystem.Stop();
-				Ship.OrientationSystem.DisableOverride();
+				env.Ship.MovementSystem.Stop();
+				env.Ship.OrientationSystem.DisableOverride();
 				return true;
 			}
 		}

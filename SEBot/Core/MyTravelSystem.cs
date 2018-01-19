@@ -5,16 +5,16 @@ namespace SEBot
 {
 	public sealed partial class Program
 	{
-		class MyTravelSystem
+	    public class MyTravelSystem
 		{
-			private readonly IMyShipController ShipController;
+			private readonly IMyShipController _shipController;
 
 			public readonly PotentialMethodMoveFactory DefaultTravelFactory;
 
 			public MyTravelSystem(IMyShipController shipController,
 				PotentialMethodMoveFactory travelFactory)
 			{
-				ShipController = shipController;
+				_shipController = shipController;
 				DefaultTravelFactory = travelFactory;
 			}
 			/// <summary>
@@ -23,7 +23,7 @@ namespace SEBot
 			/// <returns> позиция корабля</returns>
 			public Vector3D GetPosition()
 			{
-				return ShipController.CubeGrid.GridIntegerToWorld(ShipController.Position);
+				return _shipController.CubeGrid.GridIntegerToWorld(_shipController.Position);
 			}
 			/// <summary>
 			/// Для извлечения текущей скорости корабля
@@ -62,7 +62,7 @@ namespace SEBot
 			/// <returns>Матрица для преобразования в локальные координаты</returns>
 			public MatrixD GetMatrixTransformToLocalCoordinate()
 			{
-				return MatrixD.Invert(ShipController.WorldMatrix);
+				return MatrixD.Invert(_shipController.WorldMatrix);
 			}
 			/// <summary>
 			/// Дает матрицу преобразования в глобальные координаты (по Кинам)
@@ -75,7 +75,7 @@ namespace SEBot
 				//Matrix Rotation = new Matrix();
 				//ShipController.Orientation.GetMatrix(out Rotation);
 				//return MatrixD.Multiply(ShipController.WorldMatrix, Rotation);
-				return ShipController.WorldMatrix;
+				return _shipController.WorldMatrix;
 			}
 		}
 	}

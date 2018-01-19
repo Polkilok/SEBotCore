@@ -11,47 +11,58 @@ namespace SEBot
 		/*******************************************************************/
 
 		//Тот самый самый главный менеджер задач
-		class EventManager
+		private class EventManager
 		{
+			private readonly uint _updatePeriod;
+
+			//будут выполняться текущие задачи
+			private List<ConditionalTask> _smallTasksList;
+
 			//Очередь задач
-			private TaskSequence TaskQueue;
+			private TaskSequence _taskQueue;
 
-			private uint ticker;//счетчик, каждый раз, как Update получает управление, он увеличивается
-			private uint UpdatePeriod;//определяет, во сколько раз реже, чем получение управления,
-									  //будут выполняться текущие задачи
-			private List<ConditionalTask> SmallTasksList;
+			private uint _ticker;//счетчик, каждый раз, как Update получает управление, он увеличивается
+			private DateTime valuePrew;
 
+			public EventManager(uint updatePeriod)
+			{
+				_ticker = updatePeriod;
+				_updatePeriod = updatePeriod;
+				_taskQueue = new TaskSequence();
+				TickPeriod = (int)(updatePeriod / 60.0 * 1000.0);//относително неплохая аппроксимация
+				valuePrew = DateTime.UtcNow;
+				_smallTasksList = new List<ConditionalTask>();
+			}
 
+			//определяет, во сколько раз реже, чем получение управления,
 			/// <summary>
 			/// Показывает продолжительность тиков в мс
 			/// </summary>
 			//TODO оптимизировать и считать 1 раз, а не каждый тик
 			public int TickPeriod { get; private set; }
 
-			private DateTime valuePrew;
+			/// <summary>
+			/// Return time in seconds
+			/// </summary>
+			public double TimeSinceLastRun => TickPeriod / 1000.0;
 
-			public EventManager(uint updatePeriod)
+			public void AddSmallTask(ConditionalTask task)
 			{
-				ticker = updatePeriod;
-				UpdatePeriod = updatePeriod;
-				TaskQueue = new TaskSequence();
-				TickPeriod = (int)(updatePeriod / 60.0 * 1000.0);//относително неплохая аппроксимация
-				valuePrew = DateTime.UtcNow;
-				SmallTasksList = new List<ConditionalTask>();
+				_smallTasksList.Add(task);
 			}
 
-			public void AddTask(Task task)
+			public void AddTask(ITask task)
 			{
-				TaskQueue.AddTask(task);
+				_taskQueue.AddTask(task);
 			}
 
 			public void Update()
 			{
 				//Log.Log($"tick:{ticker}", INIT_SYSTEM);
-				ticker--;// = ++ticker % UpdatePeriod;
-				if (ticker > 0)
+				_ticker--;// = ++ticker % UpdatePeriod;
+				if (_ticker > 0)
 					return;//не выйдет только если ticker == 0
-				ticker = UpdatePeriod;
+				_ticker = _updatePeriod;
 
 				DateTime valueNow = DateTime.UtcNow;
 
@@ -64,30 +75,25 @@ namespace SEBot
 				//else
 				//	TickPeriod = span.Milliseconds;
 				valuePrew = valueNow;
-				ExecuteSmallTask();
-				if (TaskQueue.Execute())
+				var env = new Environment(Ship);
+				ExecuteSmallTask(env);
+				if (_taskQueue.Execute(env))
 					Log.Log("Task compleated");
-			}
-
-			public void AddSmallTask(ConditionalTask task)
-			{
-				SmallTasksList.Add(task);
-			}
-
-			private void ExecuteSmallTask()
-			{
-				foreach (var task in SmallTasksList)
-				{
-					task.Execute();
-				}
 			}
 
 			internal void Clear()
 			{
-				TaskQueue = new TaskSequence();
-				SmallTasksList = new List<ConditionalTask>();
+				_taskQueue = new TaskSequence();
+				_smallTasksList = new List<ConditionalTask>();
+			}
+
+			private void ExecuteSmallTask(Environment env)
+			{
+				foreach (var task in _smallTasksList)
+				{
+					task.Execute(env);
+				}
 			}
 		}
 	}
-
 }

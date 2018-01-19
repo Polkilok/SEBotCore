@@ -4,25 +4,23 @@
 	{
 		//Представляет отложенно создаваемую задачу
 		//Полезно, если понимание, что делать, приходит не сразу, а только в точке конечного назначения
-		class DelayCreateTask : Task
+		class DelayCreateTask : ITask
 		{
-			private readonly IFactoryTask Creator;
+			private readonly IFactoryTask _creator;
 
-			private Task RealTask;
+			private ITask _realTask;
 
 			public DelayCreateTask(IFactoryTask taskCreator)
 			{
-				Creator = taskCreator;
-				RealTask = null;
+				_creator = taskCreator;
+				_realTask = null;
 			}
 
-			public bool Execute()
+			public bool Execute(Environment env)
 			{
-				if (RealTask == null)
-				{
-					RealTask = Creator.GetTask();
-				}
-				return RealTask.Execute();
+				if (_realTask == null)
+					_realTask = _creator.GetTask();
+				return _realTask.Execute(env);
 			}
 		}
 	}

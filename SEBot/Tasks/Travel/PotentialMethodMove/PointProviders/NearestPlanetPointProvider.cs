@@ -7,38 +7,44 @@ namespace SEBot
 	{
 		/// <summary>
 		/// Предоставляет ближайшую точку планеты
-		/// Насколько она ближайшая? Ну... насколько правильно работает метод 
+		/// Насколько она ближайшая? Ну... насколько правильно работает метод
 		/// TryGetPlanetElevation(MyPlanetElevation.Surface, out height) у Keen's
 		/// </summary>
-		class NearestPlanetPointProvider : IPointProvider
+		private class NearestPlanetPointProvider : IPointProvider
 		{
-			public Vector3D Now()
+			private static readonly string VALUE_CACHE_NAME = $"{nameof(NearestPlanetPointProvider)}.NearestPlanetPosition";
+
+			public Vector3D Now(Environment env)
 			{
+				Log.Log($"Now({env})", nameof(NearestPlanetPointProvider));
+				if (env.UserCache[VALUE_CACHE_NAME] != null)
+					return ((Vector3D?)env.UserCache[VALUE_CACHE_NAME]).Value;
 				Vector3D answer = new Vector3D();
 				Vector3D planetCenter = new Vector3D();
-				if (Ship.MainController.TryGetPlanetPosition(out planetCenter))//нууу, возможно при искуственной гравитации...
+				if (env.Ship.MainController.TryGetPlanetPosition(out planetCenter))//нууу, возможно при искуственной гравитации...
 				{
-					Log.Log($"NearestPlanetPoint.Now.planetCenter(Global):{Vector3.Round(planetCenter, 0)}", POTENTIAL_METHOD_POINT_PROVIDERS_LVL);
-					planetCenter = Ship.TravelSystem.ToLocalCoordinate(planetCenter);
-					Log.Log($"NearestPlanetPoint.Now.planetCenter(InLocal):{Vector3.Round(planetCenter, 0)}", POTENTIAL_METHOD_POINT_PROVIDERS_LVL);
+					Log.Log($"Now.planetCenter(Global):{Vector3.Round(planetCenter, 0)}", nameof(NearestPlanetPointProvider));
+					planetCenter = env.Ship.TravelSystem.ToLocalCoordinate(planetCenter);
+					Log.Log($"Now.planetCenter(InLocal):{Vector3.Round(planetCenter, 0)}", nameof(NearestPlanetPointProvider));
 					double height = 0;
-					Ship.MainController.TryGetPlanetElevation(MyPlanetElevation.Surface, out height);//TODO ну здесь false уж точно не возможен?
-					Log.Log($"NearestPlanetPoint.Now.{nameof(height)}:{height}", POTENTIAL_METHOD_POINT_PROVIDERS_LVL);
+					env.Ship.MainController.TryGetPlanetElevation(MyPlanetElevation.Surface, out height);//TODO ну здесь false уж точно не возможен?
+					Log.Log($"Now.{nameof(height)}:{height}", nameof(NearestPlanetPointProvider));
 					answer = Vector3D.Normalize(planetCenter) * height;
 				}
 				//TODO в противном случае неплохо бы кидать исключение...
-				Log.Log($"NearestPlanetPoint.Now.{nameof(answer)}:{Vector3.Round(answer, 2)}", POTENTIAL_METHOD_POINT_PROVIDERS_LVL);
+				Log.Log($"Now.{nameof(answer)}:{Vector3.Round(answer, 2)}", nameof(NearestPlanetPointProvider));
+				env.UserCache[VALUE_CACHE_NAME] = answer;
+				Log.Log($"Now.End", nameof(NearestPlanetPointProvider));
 				return answer;
 			}
 
-			public Vector3D Prognosed(double seconds)
+			public Vector3D Prognosed(Environment env, double seconds)
 			{
-				Log.Log($"NearestPlanetPoint.Prognosed({seconds})", POTENTIAL_METHOD_POINT_PROVIDERS_LVL);
-				var answer = Now();
-				Log.Log($"NearestPlanetPoint.Prognosed.End)", POTENTIAL_METHOD_POINT_PROVIDERS_LVL);
+				Log.Log($"NearestPlanetPoint.Prognosed({env},{seconds})", nameof(NearestPlanetPointProvider));
+				var answer = Now(env);
+				Log.Log($"NearestPlanetPoint.Prognosed.End", nameof(NearestPlanetPointProvider));
 				return answer;
 			}
 		}
 	}
-
 }

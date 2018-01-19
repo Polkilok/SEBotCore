@@ -10,10 +10,11 @@ namespace SEBot
 	public sealed partial class Program
 	{
 		//FIXID внешне-локальные внутренне-корабельные координаты
-		class MyTrusters
+		public class MyTrusters
 		{
 			private Dictionary<Base6Directions.Direction, List<IMyThrust>> _thrusters;
 			private ShipSystems _ship;
+
 			public MyTrusters(ShipSystems ship, IMyGridTerminalSystem MyGrid)
 			{
 				_ship = ship;
@@ -52,8 +53,8 @@ namespace SEBot
 				Log.Log("Input dir " + direction.ToString());
 				MyShipVelocities speed = Ship.MainController.GetShipVelocities();
 				Log.Log("shipCoordinateSpeed Global\n" + FloorCoordinate(speed.LinearVelocity).ToString());
-				VRageMath.Vector3D shipCoordinateSpeed = Ship.TravelSystem.ToLocalCoordinate(Ship.TravelSystem.GetPosition() + speed.LinearVelocity);
-				VRageMath.Vector3D mask = Base6Directions.GetVector(direction);
+				Vector3D shipCoordinateSpeed = Ship.TravelSystem.ToLocalCoordinate(Ship.TravelSystem.GetPosition() + speed.LinearVelocity);
+				Vector3D mask = Base6Directions.GetVector(direction);
 				Log.Log("shipCoordinateSpeed\n" + FloorCoordinate(shipCoordinateSpeed).ToString());
 				//Log.Log("mask\n" + FloorCoordinate(mask).ToString());
 				return (shipCoordinateSpeed * mask).Sum;
@@ -102,6 +103,7 @@ namespace SEBot
 															   //Log.Log("Apply - current " + thruster.CurrentThrust.ToString("0.000"));
 				}
 			}
+
 			//задает движение в заданном направлении
 			//тяга двигателей противоположного направления отключается
 			//FIXID внешне-локальные внутренне-корабельные координаты (в изменении не нуждается)
@@ -137,6 +139,7 @@ namespace SEBot
 					Sum += truster.CurrentThrust;
 				return Sum;
 			}
+
 			/// <summary>
 			/// Возвращает максимально возможную силу для заданного направления
 			/// Это как GetMaxPowerInDirection, но для каждого направления в отдельности
@@ -161,6 +164,7 @@ namespace SEBot
 					Math.Abs(z.Z) < accuracy ? 0.0 : Ship.MovementSystem.GetMaxPowerInDirection(Base6Directions.GetClosestDirection(z))
 					);//TODO оптимизировать?
 			}
+
 			//Останавливает движение в любом направлении
 			//FIXID внешне-локальные внутренне-корабельные координаты (в изменении не нуждается)
 			public void Stop()
@@ -170,5 +174,4 @@ namespace SEBot
 			}
 		}
 	}
-
 }

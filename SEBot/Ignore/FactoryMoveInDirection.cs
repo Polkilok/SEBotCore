@@ -12,7 +12,7 @@ namespace SEBot
 				ThrusterEnableSwitch = rule;
 			}
 
-			public Task GetTask(Vector3D targetPoint, Base6Directions.Direction direction)
+			public ITask GetTask(Vector3D targetPoint, Base6Directions.Direction direction)
 			{
 				return new MoveInDirection(ThrusterEnableSwitch, direction, targetPoint);
 			}

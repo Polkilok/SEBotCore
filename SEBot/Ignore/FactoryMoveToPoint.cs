@@ -17,7 +17,7 @@ namespace SEBot
 				MoveInDirectionFactory = moveInDirectionFactory;
 				NoRotationRange = noRotationRange;
 			}
-			public Task GetTask(Vector3D targetPoint, bool rotatate = false)
+			public ITask GetTask(Vector3D targetPoint, bool rotatate = false)
 			{
 				if (rotatate == false)
 				{
@@ -28,7 +28,7 @@ namespace SEBot
 					task.AddTask(MoveInDirectionFactory.GetTask(targetPoint, Base6Directions.Direction.Forward));
 					return task;
 				}
-				Task rotateTask = new TurnDirectionToPoint(Base6Directions.Direction.Forward, targetPoint, NoRotationRange);
+				ITask rotateTask = new TurnDirectionToPoint(Base6Directions.Direction.Forward, targetPoint, NoRotationRange);
 				OldComplexTask outerTask = new OldComplexTask(OldComplexTask.EndCondition.Last);
 				outerTask.AddTask(rotateTask);
 				outerTask.AddTask(GetTask(targetPoint, false));

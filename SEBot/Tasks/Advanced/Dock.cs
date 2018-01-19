@@ -7,7 +7,7 @@ namespace SEBot
 		/// <summary>
 		/// класс, описывающтй задачу стыковки - банально переключает состояние коннектора
 		/// </summary>
-		class Dock : Task
+		class Dock : ITask
 		{
 			private readonly IMyShipConnector _connector;
 			//Создает задачу стыковки указанным коннектором, передавая позицию основного блока 
@@ -16,7 +16,8 @@ namespace SEBot
 			{
 				_connector = connector;
 			}
-			public bool Execute()
+
+			public bool Execute(Environment env)
 			{
 				Log.Log($"Dock.Execute()", GLOBAL_ALGORITHMIC_ACTION);
 				Log.Log($"Dock.Execute._connector.Status:{_connector.Status}", GLOBAL_ALGORITHMIC_ACTION);

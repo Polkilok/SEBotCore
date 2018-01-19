@@ -1,11 +1,14 @@
-﻿namespace SEBot
+﻿// ReSharper disable once CheckNamespace
+
+using VRage.Serialization;
+
+namespace SEBot
 {
 	public sealed partial class Program
 	{
-		interface Task
+		public interface ITask
 		{
-			bool Execute();
+			bool Execute(Environment env);
 		}
 	}
-
 }

@@ -8,16 +8,16 @@ namespace SEBot
 		//Единовременно обрабатывается только 1 прерывание
 		//На время его обработки остальные прерывания заблокированы
 		//Их срабатывание нигде не отмечается и не сохраняется
-		class InterruptedTask : Task
+		class InterruptedTask : ITask
 		{
 			//основная задача
-			private readonly Task MainTask;
+			private readonly ITask MainTask;
 			//обрабатываемое прерывание
-			private Task Interrupt;
+			private ITask Interrupt;
 			//Список прерываний
 			private List<Interrupt> Interrupts;
 
-			public InterruptedTask(Task mainTask)
+			public InterruptedTask(ITask mainTask)
 			{
 				MainTask = mainTask;
 				Interrupt = null;
@@ -29,23 +29,8 @@ namespace SEBot
 				Interrupts.Add(interrupt);
 			}
 
-			public bool Execute()
-			{
-				//нету прерывания? проверим возможные срабатывания
-				if (Interrupt == null)
-					Interrupt = CheckInterrupts();
-				//всё еще нет? тогда выполним основную задачу
-				if (Interrupt == null)
-					return MainTask.Execute();
-				//Есть прерывание
-				//Выполним его, если оно выполнится - удалим
-				if (Interrupt.Execute())
-					Interrupt = null;
-				return false;//Конечно, задача не может в таком случае считаться выполненной
-			}
-
 			//проверяет условия прерываний
-			private Task CheckInterrupts()
+			private ITask CheckInterrupts()
 			{
 				foreach (var inter in Interrupts)
 				{
@@ -54,6 +39,21 @@ namespace SEBot
 						return inter.Handler.GetTask();
 				}
 				return null;
+			}
+
+			public bool Execute(Environment env)
+			{
+				//нету прерывания? проверим возможные срабатывания
+				if (Interrupt == null)
+					Interrupt = CheckInterrupts();
+				//всё еще нет? тогда выполним основную задачу
+				if (Interrupt == null)
+					return MainTask.Execute(env);
+				//Есть прерывание
+				//Выполним его, если оно выполнится - удалим
+				if (Interrupt.Execute(env))
+					Interrupt = null;
+				return false;//Конечно, задача не может в таком случае считаться выполненной
 			}
 		}
 	}
